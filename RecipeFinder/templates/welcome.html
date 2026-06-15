@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Recipe Finder | Welcome{% endblock %}
+
+{% block content %}
+<section class="page-header welcome-header">
+    <p class="eyebrow">Start Here</p>
+    <h1>Welcome to Recipe Finder</h1>
+    <p>
+        This quick guide shows the main parts of the program before you begin cooking.
+    </p>
+</section>
+
+<section class="section welcome-grid">
+    <article class="welcome-step">
+        <span>1</span>
+        <h2>Search by ingredient</h2>
+        <p>Type one or more ingredients you already have. The first ingredient is used to find matching recipes.</p>
+    </article>
+
+    <article class="welcome-step">
+        <span>2</span>
+        <h2>Open recipe results</h2>
+        <p>Choose a recipe card to see ingredients, instructions, and nutrition information.</p>
+    </article>
+
+    <article class="welcome-step">
+        <span>3</span>
+        <h2>Save favourites</h2>
+        <p>Save recipes you like, add notes, delete old recipes, and organize them into folders.</p>
+    </article>
+</section>
+
+<section class="section guide-panel">
+    <div>
+        <p class="eyebrow">Try It</p>
+        <h2>Use the search bar</h2>
+        <p>Search for a real recipe now, or use the sample search to see the results page.</p>
+    </div>
+
+    <form class="search-form guide-search" action="{{ url_for('search') }}" method="POST">
+        <input
+            type="text"
+            name="ingredients"
+            value="chicken"
+            aria-label="Ingredients"
+        >
+        <select name="category" aria-label="Category">
+            <option value="">Any category</option>
+            <option value="breakfast">Breakfast</option>
+            <option value="lunch">Lunch</option>
+            <option value="dinner">Dinner</option>
+            <option value="dessert">Dessert/Snacks</option>
+        </select>
+        <button type="submit">View Results</button>
+    </form>
+</section>
+
+<section class="section welcome-actions">
+    <a class="button button-light" href="{{ url_for('index') }}">Go to Home Search</a>
+    <a class="button button-light" href="{{ url_for('favourites') }}">Open Favourites</a>
+    <form action="{{ url_for('finish_welcome') }}" method="POST">
+        <button type="submit">Finish Guide</button>
+    </form>
+</section>
+{% endblock %}

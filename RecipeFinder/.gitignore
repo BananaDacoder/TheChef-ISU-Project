@@ -1,0 +1,4 @@
+secrets.txt
+__pycache__/
+*.pyc
+recipes.db

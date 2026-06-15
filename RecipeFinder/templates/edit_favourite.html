@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Recipe Finder | Edit Favourite{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <p class="eyebrow">Favourite Notes</p>
+    <h1>{{ favourite.title }}</h1>
+</section>
+
+<section class="section edit-layout">
+    <img class="edit-image" src="{{ favourite.image_url }}" alt="{{ favourite.title }}">
+    <form class="note-form" action="{{ url_for('edit_favourite', favourite_id=favourite.id) }}" method="POST">
+        <label for="folder_id">Folder</label>
+        <select id="folder_id" name="folder_id">
+            <option value="">No folder</option>
+            {% for folder in folders %}
+                <option value="{{ folder.id }}" {% if favourite.folder_id == folder.id %}selected{% endif %}>
+                    {{ folder.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label for="notes">Notes</label>
+        <textarea id="notes" name="notes" rows="8" placeholder="Add cooking tips, swaps, or reminders.">{{ favourite.notes }}</textarea>
+        <div class="form-actions">
+            <button class="button" type="submit">Save Changes</button>
+            <a class="button button-light" href="{{ url_for('favourites') }}">Cancel</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

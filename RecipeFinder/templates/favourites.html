@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Recipe Finder | Favourites{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <p class="eyebrow">Saved Recipes</p>
+    <h1>Your Favourites</h1>
+    <p>Open saved recipes, delete recipes you no longer need, or sort them into folders.</p>
+</section>
+
+<section class="section favourite-tools">
+    <form class="folder-form" action="{{ url_for('create_folder') }}" method="POST">
+        <label for="folder_name">Create a folder</label>
+        <div>
+            <input id="folder_name" type="text" name="folder_name" placeholder="Weeknight dinners">
+            <button type="submit">Add Folder</button>
+        </div>
+    </form>
+    <a class="button button-light" href="{{ url_for('index') }}">Add Another Recipe</a>
+</section>
+
+<section class="section">
+    {% if favourites %}
+        <div class="folder-list">
+            {% for folder in folder_groups %}
+                <section class="folder-section">
+                    <div class="section-heading">
+                        <h2>{{ folder.name }}</h2>
+                        <p>{{ folder.favourites|length }} saved recipe{% if folder.favourites|length != 1 %}s{% endif %}</p>
+                    </div>
+
+                    {% if folder.favourites %}
+                        <div class="recipe-grid">
+                            {% for favourite in folder.favourites %}
+                                <article class="recipe-card">
+                                    <img src="{{ favourite.image_url }}" alt="{{ favourite.title }}">
+                                    <div class="recipe-card-body">
+                                        <h3>{{ favourite.title }}</h3>
+                                        <p class="saved-date">Saved {{ favourite.date_saved }}</p>
+                                        {% if favourite.notes %}
+                                            <p class="notes-preview">{{ favourite.notes }}</p>
+                                        {% else %}
+                                            <p class="notes-preview">No notes yet.</p>
+                                        {% endif %}
+                                        <div class="card-actions">
+                                            <a class="button" href="{{ url_for('recipe', recipe_id=favourite.recipe_id) }}">Open</a>
+                                            <a class="button button-light" href="{{ url_for('edit_favourite', favourite_id=favourite.id) }}">Edit or Move</a>
+                                            <form action="{{ url_for('delete_favourite', favourite_id=favourite.id) }}" method="POST">
+                                                <button class="button button-danger" type="submit">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state small-empty">
+                            <p>This folder is empty.</p>
+                        </div>
+                    {% endif %}
+                </section>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h2>No favourites yet.</h2>
+            <p>Search for recipes and save the ones you like.</p>
+            <a class="button" href="{{ url_for('index') }}">Find Recipes</a>
+        </div>
+    {% endif %}
+</section>
+
+{% if recent_searches %}
+<section class="section soft-section">
+    <div class="section-heading">
+        <h2>Your Search History</h2>
+        <p>Recent searches from this account.</p>
+    </div>
+    <div class="history-list">
+        {% for search in recent_searches %}
+            <form class="history-row" action="{{ url_for('search') }}" method="POST">
+                <input type="hidden" name="ingredients" value="{{ search.ingredients }}">
+                <input type="hidden" name="category" value="{{ search.category }}">
+                <div>
+                    <strong>{{ search.ingredients }}</strong>
+                    <span>
+                        {% if search.category %}
+                            {{ search.category.title() }} -
+                        {% endif %}
+                        {{ search.result_count }} results - {{ search.searched_at }}
+                    </span>
+                </div>
+                <button class="button button-light" type="submit">Search Again</button>
+            </form>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}

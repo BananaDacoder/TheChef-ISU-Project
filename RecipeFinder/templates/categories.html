@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Recipe Finder | Categories{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <p class="eyebrow">Explore by Type</p>
+    <h1>Browse Recipe Categories</h1>
+    <p>Choose a meal type and explore recipes. Get a random recipe to discover something new.</p>
+</section>
+
+<section class="section">
+    <div class="category-grid">
+        {% for category in categories %}
+            <article class="category-card">
+                <h3>{{ category.name }}</h3>
+                <p>{{ category.description }}</p>
+                <a class="button button-light" href="{{ url_for('random_recipe', category=category.slug) }}">Random {{ category.name }}</a>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+
+{% if recent_searches %}
+<section class="section">
+    <div class="section-heading">
+        <h2>Your Search History</h2>
+        <p>Past searches saved to your account.</p>
+    </div>
+    <div class="history-list">
+        {% for search in recent_searches %}
+            <form class="history-row" action="{{ url_for('search') }}" method="POST">
+                <input type="hidden" name="ingredients" value="{{ search.ingredients }}">
+                <input type="hidden" name="category" value="{{ search.category }}">
+                <div>
+                    <strong>{{ search.ingredients }}</strong>
+                    <span>
+                        {% if search.category %}
+                            {{ search.category.title() }} -
+                        {% endif %}
+                        {{ search.result_count }} results - {{ search.searched_at }}
+                    </span>
+                </div>
+                <button class="button button-light" type="submit">Search Again</button>
+            </form>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}

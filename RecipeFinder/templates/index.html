@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Recipe Finder | Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <p class="eyebrow">Cook smarter with what you already have</p>
+        <h1>Find recipes by ingredient.</h1>
+        <p class="hero-copy">
+            Type in ingredients from your kitchen and discover meals with nutrition facts,
+            clear instructions, and easy favourites.
+        </p>
+
+        <form class="search-form hero-search" action="{{ url_for('search') }}" method="POST">
+            <input
+                type="text"
+                name="ingredients"
+                placeholder="chicken, rice, broccoli"
+                aria-label="Ingredients"
+            >
+            <select name="category" aria-label="Category">
+                <option value="">Any category</option>
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+                <option value="dessert">Dessert/Snacks</option>
+            </select>
+            <button type="submit">
+                Search
+            </button>
+        </form>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-heading">
+        <h2>Browse Categories</h2>
+        <p>Choose a meal type and get a surprise recipe.</p>
+    </div>
+    <div class="category-grid">
+        {% for category in categories %}
+            {% if category is string %}
+                {% set name = category.title() %}
+                {% set slug = category %}
+                {% set description = "Explore tasty " + category + " ideas." %}
+            {% else %}
+                {% set name = category.name %}
+                {% set slug = category.slug %}
+                {% set description = category.description %}
+            {% endif %}
+            <article class="category-card">
+                <h3>{{ name }}</h3>
+                <p>{{ description }}</p>
+                <a class="button button-light" href="{{ url_for('random_recipe', category=slug) }}">Random {{ name }}</a>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+
+{% if recently_viewed %}
+<section class="section soft-section">
+    <div class="section-heading">
+        <h2>Recently Viewed</h2>
+        <p>Jump back into recipes you opened earlier.</p>
+    </div>
+    <div class="recipe-grid compact-grid">
+        {% for recipe in recently_viewed %}
+            <article class="recipe-card">
+                <img src="{{ recipe.image }}" alt="{{ recipe.title }}">
+                <div class="recipe-card-body">
+                    <h3>{{ recipe.title }}</h3>
+                    <a class="button" href="{{ url_for('recipe', recipe_id=recipe.id) }}">View Recipe</a>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% if recent_searches %}
+<section class="section">
+    <div class="section-heading">
+        <h2>Your Search History</h2>
+        <p>Past searches saved to your account.</p>
+    </div>
+    <div class="history-list">
+        {% for search in recent_searches %}
+            <form class="history-row" action="{{ url_for('search') }}" method="POST">
+                <input type="hidden" name="ingredients" value="{{ search.ingredients }}">
+                <input type="hidden" name="category" value="{{ search.category }}">
+                <div>
+                    <strong>{{ search.ingredients }}</strong>
+                    <span>
+                        {% if search.category %}
+                            {{ search.category.title() }} -
+                        {% endif %}
+                        {{ search.result_count }} results - {{ search.searched_at }}
+                    </span>
+                </div>
+                <button class="button button-light" type="submit">Search Again</button>
+            </form>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}

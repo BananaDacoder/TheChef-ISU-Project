@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Recipe Finder | {{ recipe.title }}{% endblock %}
+
+{% block content %}
+<section class="recipe-detail-header">
+    <img src="{{ recipe.image }}" alt="{{ recipe.title }}">
+    <div>
+        <p class="eyebrow">Recipe Details</p>
+        <h1>{{ recipe.title }}</h1>
+        <div class="detail-actions">
+            {% if favourite %}
+                <a class="button button-light" href="{{ url_for('edit_favourite', favourite_id=favourite.id) }}">Edit Favourite Notes</a>
+            {% else %}
+                <form action="{{ url_for('save_favourite') }}" method="POST">
+                    <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
+                    <input type="hidden" name="title" value="{{ recipe.title }}">
+                    <input type="hidden" name="image_url" value="{{ recipe.image }}">
+                    <select name="folder_id" aria-label="Favourite folder">
+                        <option value="">No folder</option>
+                        {% for folder in folders %}
+                            <option value="{{ folder.id }}">{{ folder.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button class="button" type="submit">Save Favourite</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="section nutrition-section">
+    <div class="nutrition-note">
+        <h2>Ingredient Nutrition</h2>
+        <p>Values come from USDA FoodData Central and are listed per 100 g of the matched ingredient.</p>
+    </div>
+</section>
+
+<section class="section">
+    {% if ingredient_nutrition %}
+        <div class="nutrition-table">
+            <div class="nutrition-table-head">
+                <span>Ingredient</span>
+                <span>Calories</span>
+                <span>Protein</span>
+                <span>Carbs</span>
+                <span>Fats</span>
+            </div>
+            {% for item in ingredient_nutrition %}
+                <div class="nutrition-table-row">
+                    <span>
+                        <strong>{{ item.ingredient.title() }}</strong>
+                        <small>{{ item.matched_food }}</small>
+                        {% if item.source %}
+                            <small>{{ item.source }}</small>
+                        {% endif %}
+                    </span>
+                    <span>{{ item.calories }}</span>
+                    <span>{{ item.protein }}</span>
+                    <span>{{ item.carbohydrates }}</span>
+                    <span>{{ item.fat }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h2>Nutrition unavailable.</h2>
+            <p>The free nutrition service could not match these ingredients right now.</p>
+        </div>
+    {% endif %}
+</section>
+
+<section class="section detail-grid">
+    <article class="detail-panel">
+        <h2>Ingredients</h2>
+        {% if recipe.extendedIngredients %}
+            <ul class="ingredient-list">
+                {% for ingredient in recipe.extendedIngredients %}
+                    <li>{{ ingredient.original }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Ingredient information is unavailable.</p>
+        {% endif %}
+    </article>
+
+    <article class="detail-panel">
+        <h2>Instructions</h2>
+        {% if recipe.instructions %}
+            <ol class="instructions">
+                {% for step in recipe.instructions %}
+                    <li>{{ step }}</li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <p>Instruction information is unavailable.</p>
+        {% endif %}
+    </article>
+</section>
+{% endblock %}
